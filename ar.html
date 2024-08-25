@@ -10,6 +10,7 @@
 </head>
 <body style="margin: 0; overflow: hidden;">
     <a-scene vr-mode-ui="enabled: false" embedded arjs>
+        <!-- L'objet est positionné à une latitude et une longitude fixes -->
         <a-entity
             id="ar-model"
             gltf-model="url(test.glb)"
@@ -17,14 +18,17 @@
             scale="1 1 1">
         </a-entity>
 
+        <!-- La caméra AR est ajoutée pour la vue en AR -->
         <a-camera gps-camera rotation-reader></a-camera>
     </a-scene>
 
     <script>
+        // Récupérer les valeurs stockées depuis la première page
         const latitude = localStorage.getItem('latitude');
         const longitude = localStorage.getItem('longitude');
         const scale = localStorage.getItem('scale');
 
+        // Appliquer les paramètres à l'objet AR
         const arModel = document.getElementById('ar-model');
         arModel.setAttribute('gps-entity-place', `latitude: ${latitude}; longitude: ${longitude};`);
         arModel.setAttribute('scale', `${scale} ${scale} ${scale}`);
