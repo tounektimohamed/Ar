@@ -3,54 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sélection des Paramètres</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <title>Configuration de l'Objet AR</title>
 </head>
 <body>
-    <h1>Sélectionnez la position géographique, locale et l'échelle de l'objet AR</h1>
-
-    <!-- Coordonnées géographiques -->
-    <label for="latitude">Latitude:</label>
-    <input type="number" id="latitude" name="latitude" step="0.0001" value="32.876907"><br><br>
-    <label for="longitude">Longitude:</label>
-    <input type="number" id="longitude" name="longitude" step="0.0001" value="10.483158"><br><br>
-
-    <!-- Coordonnées locales -->
-    <label for="x">Position X:</label>
-    <input type="number" id="x" name="x" value="0" step="0.1"><br><br>
-    <label for="y">Position Y:</label>
-    <input type="number" id="y" name="y" value="0" step="0.1"><br><br>
-    <label for="z">Position Z:</label>
-    <input type="number" id="z" name="z" value="0" step="0.1"><br><br>
-
-    <!-- Échelle -->
-    <label for="scaleRange">Échelle:</label>
-    <input type="range" id="scaleRange" name="scaleRange" min="0.1" max="5" value="1" step="0.1" oninput="updateScaleValue(this.value)">
-    <span id="scaleValue">1</span><br><br>
-
-    <button onclick="saveParameters()">Afficher en AR</button>
+    <h1>Configuration de l'Objet AR</h1>
+    <form id="config-form">
+        <label for="latitude">Latitude:</label>
+        <input type="number" id="latitude" step="any" required>
+        <br>
+        <label for="longitude">Longitude:</label>
+        <input type="number" id="longitude" step="any" required>
+        <br>
+        <label for="scale">Échelle:</label>
+        <input type="number" id="scale" step="any" value="1" required>
+        <br>
+        <button type="submit">Sauvegarder et Voir</button>
+    </form>
 
     <script>
-        function updateScaleValue(value) {
-            document.getElementById('scaleValue').innerText = value;
-        }
+        document.getElementById('config-form').addEventListener('submit', function(event) {
+            event.preventDefault();
 
-        function saveParameters() {
-            const latitude = document.getElementById('latitude').value;
-            const longitude = document.getElementById('longitude').value;
-            const x = document.getElementById('x').value;
-            const y = document.getElementById('y').value;
-            const z = document.getElementById('z').value;
-            const scale = document.getElementById('scaleRange').value;
+            const latitude = parseFloat(document.getElementById('latitude').value);
+            const longitude = parseFloat(document.getElementById('longitude').value);
+            const scale = parseFloat(document.getElementById('scale').value);
 
             localStorage.setItem('latitude', latitude);
             localStorage.setItem('longitude', longitude);
-            localStorage.setItem('localPosition', JSON.stringify({ x, y, z }));
             localStorage.setItem('scale', scale);
 
             window.location.href = 'ar.html';
-        }
+        });
     </script>
 </body>
 </html>

@@ -6,46 +6,35 @@
     <title>AR Scene</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://aframe.io/releases/1.3.0/aframe-ar.js"></script>
-    <script src="https://unpkg.com/three@0.139.2/build/three.min.js"></script>
+    <style>
+        body { margin: 0; }
+        a-scene { width: 100vw; height: 100vh; }
+    </style>
 </head>
-<body style="margin: 0; overflow: hidden;">
-    <a-scene embedded arjs>
-        <!-- L'objet est positionné à une position locale fixe -->
+<body>
+    <a-scene embedded arjs="sourceType: webcam;">
+        <a-camera position="0 1.6 0"></a-camera>
+
         <a-entity
             id="ar-model"
             gltf-model="url(test.glb)"
-            position="0 0 0"
+            position="0 0 -5"
             scale="1 1 1">
         </a-entity>
-
-        <!-- La caméra AR est ajoutée pour la vue en AR -->
-        <a-camera></a-camera>
     </a-scene>
 
     <script>
-        // Fonction pour convertir les coordonnées GPS en coordonnées locales (simplifiée)
-        function gpsToLocal(lat, lng) {
-            // Cette fonction dépendra de votre système de coordonnées locales.
-            // Ici, nous utilisons une conversion simple pour démonstration.
-            return {
-                x: (lng - 10.483158) * 1000, // Conversion simplifiée, à ajuster
-                y: 0, // Pas de changement en Y
-                z: (lat - 32.876907) * 1000  // Conversion simplifiée, à ajuster
-            };
-        }
-
-        // Récupérer les valeurs stockées depuis la première page
+        // Récupération des paramètres depuis localStorage
         const latitude = parseFloat(localStorage.getItem('latitude'));
         const longitude = parseFloat(localStorage.getItem('longitude'));
-        const scale = localStorage.getItem('scale');
-        const localPosition = JSON.parse(localStorage.getItem('localPosition'));
+        const scale = parseFloat(localStorage.getItem('scale'));
 
-        // Convertir les coordonnées GPS en coordonnées locales
-        const localCoords = gpsToLocal(latitude, longitude);
-
-        // Appliquer les paramètres à l'objet AR
+        // Récupération de l'élément du modèle
         const arModel = document.getElementById('ar-model');
-        arModel.setAttribute('position', `${localCoords.x + localPosition.x} ${localPosition.y} ${localCoords.z + localPosition.z}`);
+
+        // Positionner le modèle
+        // Note: Le modèle est positionné relativement au point de vue de la caméra. Ajustez cette logique selon vos besoins.
+        arModel.setAttribute('position', `0 0 -5`); // Modifiez cette position pour correspondre à vos besoins
         arModel.setAttribute('scale', `${scale} ${scale} ${scale}`);
     </script>
 </body>
