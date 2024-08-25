@@ -4,35 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configuration de l'Objet AR</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 400px; width: 100%; }
+    </style>
 </head>
 <body>
     <h1>Configuration de l'Objet AR</h1>
     <form id="config-form">
-        <label for="latitude">Latitude:</label>
-        <input type="number" id="latitude" step="any" required>
-        <br>
-        <label for="longitude">Longitude:</label>
-        <input type="number" id="longitude" step="any" required>
-        <br>
+        <div id="map"></div>
         <label for="scale">Échelle:</label>
         <input type="number" id="scale" step="any" value="1" required>
         <br>
         <button type="submit">Sauvegarder et Voir</button>
     </form>
 
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
+        const map = L.map('map').setView([51.505, -0.09], 13); // Centré sur Londres par défaut
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        let lat, lng;
+
+        map.on('click', function(event) {
+            lat = event.latlng.lat;
+            lng = event.latlng.lng;
+            L.marker([lat, lng]).addTo(map)
+                .bindPopup('Coordonnées: ' + lat + ', ' + lng)
+                .openPopup();
+        });
+
         document.getElementById('config-form').addEventListener('submit', function(event) {
             event.preventDefault();
 
-            const latitude = parseFloat(document.getElementById('latitude').value);
-            const longitude = parseFloat(document.getElementById('longitude').value);
             const scale = parseFloat(document.getElementById('scale').value);
 
-            localStorage.setItem('latitude', latitude);
-            localStorage.setItem('longitude', longitude);
-            localStorage.setItem('scale', scale);
-
-            window.location.href = 'ar.html';
+            if (lat && lng) {
+                localStorage.setItem('latitude', lat);
+                localStorage.setItem('longitude', lng);
+                localStorage.setItem('scale', scale);
+                window.location.href = 'ar.html';
+            } else {
+                alert('Veuillez sélectionner une position sur la carte.');
+            }
         });
     </script>
 </body>

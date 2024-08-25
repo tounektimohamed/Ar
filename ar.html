@@ -32,9 +32,8 @@
         // Récupération de l'élément du modèle
         const arModel = document.getElementById('ar-model');
 
-        // Positionner le modèle
-        // Note: Le modèle est positionné relativement au point de vue de la caméra. Ajustez cette logique selon vos besoins.
-        arModel.setAttribute('position', `0 0 -5`); // Modifiez cette position pour correspondre à vos besoins
+        // Ajuster la position et l'échelle du modèle
+        arModel.setAttribute('position', `0 0 -5`); // Modifiez cette position selon vos besoins
         arModel.setAttribute('scale', `${scale} ${scale} ${scale}`);
     </script>
 </body>
