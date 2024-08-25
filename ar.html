@@ -13,12 +13,12 @@
 </head>
 <body>
     <a-scene embedded arjs="sourceType: webcam;">
-        <a-camera position="0 1.6 0"></a-camera>
+        <a-camera></a-camera>
 
         <a-entity
             id="ar-model"
             gltf-model="url(test.glb)"
-            position="0 0 -5"
+            position="0 0 0"  <!-- Position initiale -->
             scale="1 1 1">
         </a-entity>
     </a-scene>
@@ -32,8 +32,18 @@
         // Récupération de l'élément du modèle
         const arModel = document.getElementById('ar-model');
 
-        // Ajuster la position et l'échelle du modèle
-        arModel.setAttribute('position', `0 0 -5`); // Modifiez cette position selon vos besoins
+        // Exemple d'ajustement des coordonnées du modèle en fonction des coordonnées GPS
+        // Ce code est un exemple et devra être ajusté selon vos besoins spécifiques
+        // Conversion des coordonnées GPS en coordonnées 3D fictives
+        const lat = latitude || 0;  // Définir une valeur par défaut si non défini
+        const lon = longitude || 0; // Définir une valeur par défaut si non défini
+
+        // Vous devrez ajuster la formule pour correspondre à votre espace de coordonnées 3D
+        const x = lon * 100;  // Conversion fictive
+        const z = lat * 100;  // Conversion fictive
+
+        // Positionner le modèle en utilisant les coordonnées converties
+        arModel.setAttribute('position', `${x} 0 ${z}`);
         arModel.setAttribute('scale', `${scale} ${scale} ${scale}`);
     </script>
 </body>
