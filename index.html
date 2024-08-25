@@ -2,42 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Model Settings</title>
+    <title>Paramètres AR</title>
 </head>
 <body>
-    <h3>Configurer la Position et l'Échelle du Modèle</h3>
-    <label for="latitude">Latitude:</label>
-    <input type="text" id="latitude" placeholder="Entrez la latitude" value="32.876907">
-    <br/>
-    <label for="longitude">Longitude:</label>
-    <input type="text" id="longitude" placeholder="Entrez la longitude" value="10.483158">
-    <br/>
-    <label for="scale">Échelle:</label>
-    <input type="range" id="scale" min="0.01" max="2" step="0.01" value="0.1" oninput="updateScaleValue(this.value)">
-    <span id="scale-value">0.1</span>
-    <br/>
-    <button onclick="goToAR()">OK</button>
+    <h1>Définir les paramètres du modèle AR</h1>
+    <form id="ar-form">
+        <label for="latitude">Latitude:</label><br>
+        <input type="text" id="latitude" name="latitude" value="32.876907"><br><br>
+        <label for="longitude">Longitude:</label><br>
+        <input type="text" id="longitude" name="longitude" value="10.483158"><br><br>
+        <label for="scale">Échelle (ex: 1, 0.5, 2):</label><br>
+        <input type="number" id="scale" name="scale" value="1" step="0.1"><br><br>
+        <button type="button" onclick="saveParameters()">Afficher en AR</button>
+    </form>
 
     <script>
-        // Met à jour l'affichage de la valeur de l'échelle
-        function updateScaleValue(value) {
-            document.getElementById('scale-value').textContent = value;
-        }
-
-        function goToAR() {
-            // Récupérer les valeurs des champs
-            const lat = document.getElementById('latitude').value;
-            const lon = document.getElementById('longitude').value;
+        function saveParameters() {
+            // Récupère les valeurs entrées par l'utilisateur
+            const latitude = document.getElementById('latitude').value;
+            const longitude = document.getElementById('longitude').value;
             const scale = document.getElementById('scale').value;
 
-            // Stocker les valeurs dans le localStorage pour les passer à la page AR
-            localStorage.setItem('latitude', lat);
-            localStorage.setItem('longitude', lon);
+            // Stocke les valeurs dans le localStorage
+            localStorage.setItem('latitude', latitude);
+            localStorage.setItem('longitude', longitude);
             localStorage.setItem('scale', scale);
 
-            // Rediriger vers la page AR
+            // Redirige vers la page AR
             window.location.href = 'ar.html';
         }
     </script>

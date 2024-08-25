@@ -1,40 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>AR Model Viewer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Scene</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+    <script src="https://unpkg.com/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script> <!-- Inclut des extensions pour A-Frame -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
 </head>
-
-<body>
-    <a-scene
-        vr-mode-ui="enabled: false"
-        arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
-    >
+<body style="margin: 0; overflow: hidden;">
+    <a-scene vr-mode-ui="enabled: false" embedded arjs>
+        <!-- Charger le modèle 3D à la position GPS spécifiée -->
         <a-entity
             id="ar-model"
             gltf-model="url(test.glb)"
-            position="0 0 0"
-            scale="0.1 0.1 0.1"
-            gps-entity-place="latitude: 32.876907; longitude: 10.483158;"
-        >
+            gps-entity-place="latitude: 0; longitude: 0;"
+            scale="1 1 1">
         </a-entity>
 
+        <!-- Ajouter la caméra AR -->
         <a-camera gps-camera rotation-reader></a-camera>
     </a-scene>
 
     <script>
-        // Récupérer les valeurs stockées dans le localStorage
-        const lat = localStorage.getItem('latitude');
-        const lon = localStorage.getItem('longitude');
+        // Récupérer les valeurs stockées depuis la première page
+        const latitude = localStorage.getItem('latitude');
+        const longitude = localStorage.getItem('longitude');
         const scale = localStorage.getItem('scale');
 
-        // Mettre à jour le modèle AR avec les valeurs récupérées
+        // Appliquer les paramètres à l'objet AR
         const arModel = document.getElementById('ar-model');
-        arModel.setAttribute('gps-entity-place', `latitude: ${lat}; longitude: ${lon};`);
+        arModel.setAttribute('gps-entity-place', `latitude: ${latitude}; longitude: ${longitude};`);
         arModel.setAttribute('scale', `${scale} ${scale} ${scale}`);
     </script>
 </body>
