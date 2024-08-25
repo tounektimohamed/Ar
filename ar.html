@@ -15,6 +15,7 @@
     <a-scene embedded arjs="sourceType: webcam;">
         <a-camera></a-camera>
 
+        <!-- Modèle 3D fixe -->
         <a-entity
             id="ar-model"
             gltf-model="url(test.glb)"
@@ -24,23 +25,21 @@
     </a-scene>
 
     <script>
-        // Récupération des paramètres depuis localStorage
-        const latitude = parseFloat(localStorage.getItem('latitude'));
-        const longitude = parseFloat(localStorage.getItem('longitude'));
-        const scale = parseFloat(localStorage.getItem('scale'));
+        // Exemple de valeurs pour latitude et longitude
+        const latitude = parseFloat(localStorage.getItem('latitude')) || 37.7749;  // Valeur par défaut
+        const longitude = parseFloat(localStorage.getItem('longitude')) || -122.4194;  // Valeur par défaut
+        const scale = parseFloat(localStorage.getItem('scale')) || 1;  // Valeur par défaut
 
         // Récupération de l'élément du modèle
         const arModel = document.getElementById('ar-model');
 
-        // Exemple d'ajustement des coordonnées du modèle en fonction des coordonnées GPS
-        // Ce code est un exemple et devra être ajusté selon vos besoins spécifiques
-        // Conversion des coordonnées GPS en coordonnées 3D fictives
-        const lat = latitude || 0;  // Définir une valeur par défaut si non défini
-        const lon = longitude || 0; // Définir une valeur par défaut si non défini
+        // Coordonnées GPS de référence pour la conversion (exemple: San Francisco)
+        const latOrigin = 37.7749;  // Latitude de référence
+        const lonOrigin = -122.4194; // Longitude de référence
 
-        // Vous devrez ajuster la formule pour correspondre à votre espace de coordonnées 3D
-        const x = lon * 100;  // Conversion fictive
-        const z = lat * 100;  // Conversion fictive
+        // Conversion des coordonnées GPS en coordonnées 3D fictives
+        const x = (longitude - lonOrigin) * 1000; // Conversion fictive
+        const z = (latitude - latOrigin) * 1000; // Conversion fictive
 
         // Positionner le modèle en utilisant les coordonnées converties
         arModel.setAttribute('position', `${x} 0 ${z}`);
