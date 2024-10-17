@@ -3,13 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Model Positioning</title>
+    <title>AR Skull Model - Matrix Control</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://aframe.io/releases/1.3.0/aframe-ar.js"></script>
     <style>
         body { margin: 0; }
         a-scene { width: 100vw; height: 100vh; }
-        #button-container { position: absolute; top: 10px; left: 10px; z-index: 1; }
+        #button-container {
+            position: absolute; top: 10px; left: 10px;
+            z-index: 1; display: grid; grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+        #matrix-display {
+            position: absolute;
+            bottom: 10px; left: 10px; z-index: 1;
+            background: rgba(0, 0, 0, 0.5); color: white;
+            padding: 10px; font-size: 12px;
+            width: 300px; overflow-wrap: break-word;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -17,67 +33,86 @@
         <!-- Caméra AR -->
         <a-camera gps-camera rotation-reader></a-camera>
 
-        <!-- Modèle 3D -->
+        <!-- Modèle 3D avec position initiale définie par la matrice -->
         <a-entity
-            id="ar-model"
-            gltf-model="url(test.glb)"
-            position="0 0 -5"
-            scale="1 1 1"
-            class="model"
+            id="skull-model"
+            obj-model="obj: url(12140_Skull_v3_L2.obj); mtl: url(12140_Skull_v3_L2.mtl)"
+            position="0 -0.5 -3"
+            scale="0.04 0.04 0.04"  
+            rotation="0 0 0" 
             gps-entity-place="latitude: 32.876907; longitude: 10.483158;">
         </a-entity>
 
-        <!-- Zone pour afficher les coordonnées du modèle -->
-        <a-entity id="model-position" text="value: Position: (0, 0, -5); color: #FFF;"
-                  position="0 1 -3" scale="2 2 2">
+        <!-- Repère de coordonnées -->
+        <a-entity id="coordinate-system" position="0 0 0">
+            <!-- Axe X -->
+            <a-cylinder position="0.5 0 0" height="0.02" radius="0.02" color="red" rotation="90 0 0"></a-cylinder>
+            <a-entity position="0.5 0 0.1" text="value: X; align: center; color: red;"></a-entity> <!-- Label X -->
+            
+            <!-- Axe Y -->
+            <a-cylinder position="0 0.5 0" height="0.02" radius="0.02" color="green" rotation="0 0 0"></a-cylinder>
+            <a-entity position="0 0.5 0.1" text="value: Y; align: center; color: green;"></a-entity> <!-- Label Y -->
+            
+            <!-- Axe Z -->
+            <a-cylinder position="0 0 0.5" height="0.02" radius="0.02" color="blue" rotation="0 90 0"></a-cylinder>
+            <a-entity position="0 0 0.6" text="value: Z; align: center; color: blue;"></a-entity> <!-- Label Z -->
         </a-entity>
+
+        <!-- Zone de texte pour afficher la matrice -->
+        <div id="matrix-display">Matrice du modèle : </div>
     </a-scene>
 
-    <!-- Boutons pour fixer et réinitialiser la position -->
+    <!-- Boutons de contrôle -->
     <div id="button-container">
-        <button id="set-position">Fixer la Position</button>
-        <button id="reset-position">Réinitialiser la Position</button>
+        <button onclick="moveModel(0.1, 0, 0)">→ Droite</button>
+        <button onclick="moveModel(-0.1, 0, 0)">← Gauche</button>
+        <button onclick="moveModel(0, 0.1, 0)">↑ Monter</button>
+        <button onclick="moveModel(0, -0.1, 0)">↓ Descendre</button>
+        <button onclick="rotateModel(10, 0, 0)">⟳ Tourner X</button>
+        <button onclick="rotateModel(-10, 0, 0)">⟲ Tourner -X</button>
+        <button onclick="rotateModel(0, 10, 0)">⟳ Tourner Y</button>
+        <button onclick="rotateModel(0, -10, 0)">⟲ Tourner -Y</button>
+        <button onclick="rotateModel(0, 0, 10)">⟳ Tourner Z</button>
+        <button onclick="rotateModel(0, 0, -10)">⟲ Tourner -Z</button>
+        <button onclick="scaleModel(1.1)">Zoom +</button>
+        <button onclick="scaleModel(0.9)">Zoom -</button>
     </div>
 
     <script>
-        const arModel = document.getElementById('ar-model');
-        const modelPosition = document.getElementById('model-position');
+        const model = document.getElementById('skull-model');
+        const matrixDisplay = document.getElementById('matrix-display');
 
-        function updatePosition() {
-            const position = arModel.object3D.position;
-            fetch('/save-position', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    x: position.x,
-                    y: position.y,
-                    z: position.z
-                })
-            }).then(response => response.json())
-              .then(data => {
-                modelPosition.setAttribute('text', `value: Position: (${position.x.toFixed(2)}, ${position.y.toFixed(2)}, ${position.z.toFixed(2)}); color: #FFF;`);
-              });
+        // Fonction pour mettre à jour l'affichage de la matrice du modèle
+        function updateMatrixDisplay() {
+            const matrix = model.object3D.matrix;
+            matrixDisplay.innerHTML = `Matrice du modèle :<br>${matrix.elements.map(e => e.toFixed(2)).join(' ')}`;
         }
 
-        function applyStoredPosition() {
-            fetch('/get-position')
-              .then(response => response.json())
-              .then(data => {
-                if (data.position) {
-                    arModel.setAttribute('position', `${data.position.x} ${data.position.y} ${data.position.z}`);
-                    modelPosition.setAttribute('text', `value: Position: (${data.position.x.toFixed(2)}, ${data.position.y.toFixed(2)}, ${data.position.z.toFixed(2)}); color: #FFF;`);
-                }
-              });
+        // Déplacer le modèle
+        function moveModel(dx, dy, dz) {
+            const pos = model.object3D.position;
+            pos.x += dx;
+            pos.y += dy;
+            pos.z += dz;
+            updateMatrixDisplay();
         }
 
-        applyStoredPosition();
+        // Tourner le modèle autour des axes X, Y, Z
+        function rotateModel(rx, ry, rz) {
+            model.object3D.rotation.x += THREE.Math.degToRad(rx);
+            model.object3D.rotation.y += THREE.Math.degToRad(ry);
+            model.object3D.rotation.z += THREE.Math.degToRad(rz);
+            updateMatrixDisplay();
+        }
 
-        document.getElementById('set-position').addEventListener('click', updatePosition);
-        document.getElementById('reset-position').addEventListener('click', () => {
-            fetch('/reset-position', { method: 'POST' })
-              .then(response => response.json())
-              .then(() => applyStoredPosition());
-        });
+        // Mise à l'échelle du modèle
+        function scaleModel(factor) {
+            model.object3D.scale.multiplyScalar(factor);
+            updateMatrixDisplay();
+        }
+
+        // Mettre à jour la matrice du modèle à intervalles réguliers
+        setInterval(updateMatrixDisplay, 500);
     </script>
 </body>
 </html>
