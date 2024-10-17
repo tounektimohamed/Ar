@@ -7,55 +7,41 @@
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://aframe.io/releases/1.3.0/aframe-ar.js"></script>
     <style>
-        body { 
-            margin: 0; 
-            font-family: Arial, sans-serif; 
-            background-color: #f0f0f0; 
-            color: #333; 
-        }
-        a-scene { 
-            width: 100vw; 
-            height: 100vh; 
-        }
+        body { margin: 0; font-family: Arial, sans-serif; }
+        a-scene { width: 100vw; height: 100vh; }
         #button-container {
-            position: absolute; 
-            top: 10px; 
-            left: 10px;
-            z-index: 1; 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr);
+            position: absolute; top: 10px; left: 10px;
+            z-index: 1; display: grid; grid-template-columns: 1fr 1fr;
             gap: 5px;
         }
         #matrix-display {
             position: absolute;
-            top: 10px; 
-            right: 10px; 
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.8); 
-            color: black;
-            padding: 10px; 
-            font-size: 14px;
-            border-radius: 5px; 
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            width: 300px; 
-            overflow-wrap: break-word;
-            transition: background 0.3s;
-        }
-        #matrix-display:hover {
-            background: rgba(255, 255, 255, 1);
+            bottom: 10px; left: 10px; z-index: 1;
+            background: rgba(0, 0, 0, 0.5); color: white;
+            padding: 10px; font-size: 12px;
+            width: 300px; overflow-wrap: break-word;
         }
         button {
             padding: 10px;
             font-size: 16px;
             cursor: pointer;
+            background-color: #e6a800; /* Couleur bleu */
+            color: white; /* Couleur du texte */
             border: none;
-            background-color: #007BFF;
-            color: white;
             border-radius: 5px;
-            transition: background 0.3s;
+            transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Couleur au survol */
+        }
+        #credits {
+            position: absolute; bottom: 20px; right: 20px; z-index: 1;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            text-align: center;
         }
     </style>
 </head>
@@ -68,8 +54,8 @@
         <a-entity
             id="skull-model"
             obj-model="obj: url(12140_Skull_v3_L2.obj); mtl: url(12140_Skull_v3_L2.mtl)"
-            position="0 -0.5 -3"
-            scale="0.04 0.04 0.04"  
+            position="0 0.5 -5"
+            scale="0.05 0.05 0.05"  
             rotation="0 0 0" 
             gps-entity-place="latitude: 32.876907; longitude: 10.483158;">
         </a-entity>
@@ -89,8 +75,8 @@
             <a-entity position="0 0 0.6" text="value: Z; align: center; color: blue;"></a-entity> <!-- Label Z -->
         </a-entity>
 
-        <!-- Zone de texte pour afficher la matrice, initialisée avec les valeurs données -->
-        <div id="matrix-display">Matrice du modèle :<br>0.06 0.00 0.00 0.00<br>0.00 0.01 -0.06 0.00<br>0.00 0.06 0.01 0.00<br>0.00 1.10 -3.00 1.00</div>
+        <!-- Zone de texte pour afficher la matrice -->
+        <div id="matrix-display">Matrice du modèle : </div>
     </a-scene>
 
     <!-- Boutons de contrôle -->
@@ -108,6 +94,9 @@
         <button onclick="scaleModel(1.1)">Zoom +</button>
         <button onclick="scaleModel(0.9)">Zoom -</button>
     </div>
+
+    <!-- Section des crédits -->
+    <div id="credits">Réalisé par tounekti mohamed, étudiant en MSDHT</div>
 
     <script>
         const model = document.getElementById('skull-model');
