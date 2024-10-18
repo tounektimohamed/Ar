@@ -3,43 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Skull Model - Fixed in Space</title>
+    <title>AR Skull Model - Matrix Control</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/ar.js@2.2.1/aframe/build/aframe-ar.min.js"></script>
+    <script src="https://aframe.io/releases/1.3.0/aframe-ar.js"></script>
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
         a-scene { width: 100vw; height: 100vh; }
-
         #button-container {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 1;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            position: absolute; top: 10px; left: 10px;
+            z-index: 1; display: grid; grid-template-columns: 1fr 1fr;
             gap: 5px;
         }
-
+        #matrix-display {
+            position: absolute;
+            bottom: 10px; left: 10px; z-index: 1;
+            background: rgba(0, 0, 0, 0.5); color: white;
+            padding: 10px; font-size: 12px;
+            width: 300px; overflow-wrap: break-word;
+        }
         button {
             padding: 10px;
             font-size: 16px;
             cursor: pointer;
-            background-color: #e6a800;
-            color: white;
+            background-color: #e6a800; /* Couleur bleu */
+            color: white; /* Couleur du texte */
             border: none;
             border-radius: 5px;
             transition: background-color 0.3s;
         }
-
         button:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Couleur au survol */
         }
-
         #credits {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1;
+            position: absolute; bottom: 20px; right: 20px; z-index: 1;
             background: rgba(0, 0, 0, 0.7);
             color: white;
             padding: 10px;
@@ -50,19 +46,37 @@
     </style>
 </head>
 <body>
-    <!-- Scène AR avec caméra activée et rotation liée aux capteurs -->
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        <!-- Modèle 3D fixe dans l'espace -->
+        <!-- Caméra AR -->
+        <a-camera gps-camera rotation-reader></a-camera>
+
+        <!-- Modèle 3D avec position initiale définie par la matrice -->
         <a-entity
             id="skull-model"
             obj-model="obj: url(12140_Skull_v3_L2.obj); mtl: url(12140_Skull_v3_L2.mtl)"
-            position="0 0 -5"
-            scale="0.05 0.05 0.05"
-            rotation="0 180 0">
+            position="0 0.5 -5"
+            scale="0.05 0.05 0.05"  
+            rotation="0 0 0" 
+            gps-entity-place="latitude: 32.876907; longitude: 10.483158;">
         </a-entity>
 
-        <!-- Caméra avec rotation selon les capteurs du téléphone -->
-        <a-camera gps-camera rotation-reader></a-camera>
+        <!-- Repère de coordonnées -->
+        <a-entity id="coordinate-system" position="0 0 0">
+            <!-- Axe X -->
+            <a-cylinder position="0.5 0 0" height="0.02" radius="0.02" color="red" rotation="90 0 0"></a-cylinder>
+            <a-entity position="0.5 0 0.1" text="value: X; align: center; color: red;"></a-entity> <!-- Label X -->
+            
+            <!-- Axe Y -->
+            <a-cylinder position="0 0.5 0" height="0.02" radius="0.02" color="green" rotation="0 0 0"></a-cylinder>
+            <a-entity position="0 0.5 0.1" text="value: Y; align: center; color: green;"></a-entity> <!-- Label Y -->
+            
+            <!-- Axe Z -->
+            <a-cylinder position="0 0 0.5" height="0.02" radius="0.02" color="blue" rotation="0 90 0"></a-cylinder>
+            <a-entity position="0 0 0.6" text="value: Z; align: center; color: blue;"></a-entity> <!-- Label Z -->
+        </a-entity>
+
+        <!-- Zone de texte pour afficher la matrice -->
+        <div id="matrix-display">Matrice du modèle : </div>
     </a-scene>
 
     <!-- Boutons de contrôle -->
@@ -82,10 +96,17 @@
     </div>
 
     <!-- Section des crédits -->
-    <div id="credits">Réalisé par Tounekti Mohamed, étudiant en MSDHT</div>
+    <div id="credits">Réalisé par tounekti mohamed, étudiant en MSDHT</div>
 
     <script>
         const model = document.getElementById('skull-model');
+        const matrixDisplay = document.getElementById('matrix-display');
+
+        // Fonction pour mettre à jour l'affichage de la matrice du modèle
+        function updateMatrixDisplay() {
+            const matrix = model.object3D.matrix;
+            matrixDisplay.innerHTML = `Matrice du modèle :<br>${matrix.elements.map(e => e.toFixed(2)).join(' ')}`;
+        }
 
         // Déplacer le modèle
         function moveModel(dx, dy, dz) {
@@ -93,6 +114,7 @@
             pos.x += dx;
             pos.y += dy;
             pos.z += dz;
+            updateMatrixDisplay();
         }
 
         // Tourner le modèle autour des axes X, Y, Z
@@ -100,12 +122,17 @@
             model.object3D.rotation.x += THREE.Math.degToRad(rx);
             model.object3D.rotation.y += THREE.Math.degToRad(ry);
             model.object3D.rotation.z += THREE.Math.degToRad(rz);
+            updateMatrixDisplay();
         }
 
         // Mise à l'échelle du modèle
         function scaleModel(factor) {
             model.object3D.scale.multiplyScalar(factor);
+            updateMatrixDisplay();
         }
+
+        // Mettre à jour la matrice du modèle à intervalles réguliers
+        setInterval(updateMatrixDisplay, 500);
     </script>
 </body>
 </html>
